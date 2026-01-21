@@ -99,7 +99,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Efeito inicial
   useEffect(() => {
     let isMounted = true;
-    let timeoutId: NodeJS.Timeout;
+    // CORREÇÃO: Use ReturnType<typeof setTimeout> em vez de NodeJS.Timeout
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const bootstrapAuth = async () => {
       try {
@@ -178,7 +179,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       isMounted = false;
-      clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
       subscription.unsubscribe();
     };
   }, [initialCheckDone]);
@@ -389,7 +392,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut,
     setupProfile,
     updateProfile,
-    refreshProfile, // Adicionado
+    refreshProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
